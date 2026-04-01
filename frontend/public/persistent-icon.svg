@@ -1,0 +1,11 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Orange P Icon -->
+  <g>
+    <!-- Main stem -->
+    <rect x="40" y="30" width="28" height="130" rx="6" fill="#FF6600"/>
+    <!-- Curved top loop -->
+    <path d="M 68 30 Q 110 30 128 52 Q 138 65 138 85 Q 138 105 128 118 Q 110 140 68 140 L 68 115 Q 95 115 110 105 Q 120 95 120 85 Q 120 75 110 65 Q 95 55 68 55 Z" fill="#FF6600"/>
+    <!-- Dot above P -->
+    <circle cx="80" cy="18" r="12" fill="#FF6600"/>
+  </g>
+</svg>

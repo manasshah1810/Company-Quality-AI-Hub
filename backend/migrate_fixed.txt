@@ -1,0 +1,48 @@
+﻿[dotenv@17.3.1] injecting env (2) from ..\.env -- tip: ≡ƒ¢í∩╕Å auth for agents: https://vestauth.com
+≡ƒöä  Starting Firestore migration...
+
+  ≡ƒôè  Writing dashboard/kpis...
+     Γ£à  dashboard/kpis written
+  ≡ƒ⌐╣  Writing healing/events...
+     Γ£à  healing/events written
+  ≡ƒ⌐╣  Writing healing/overview...
+     Γ£à  healing/overview written
+  ≡ƒ⌐╣  Writing healing/decisionMatrix...
+     Γ£à  healing/decisionMatrix written
+  ≡ƒ⌐╣  Writing healing/shadowApprovals...
+     Γ£à  healing/shadowApprovals written
+  ≡ƒÅó  Writing tenantData/clients...
+     Γ£à  tenantData/clients written
+  ≡ƒÅó  Writing tenantData/clientTiles...
+     Γ£à  tenantData/clientTiles written
+  ≡ƒº¬  Writing tenantData/testSuites...
+     Γ£à  tenantData/testSuites written
+  ≡ƒñû  Writing tenantData/agentJobs...
+node.exe : Γ¥î  Migration failed: Error: Value for argument "data" is not a valid Firestore document. Cannot use 
+"undefined" as a Firestore value (found in field "items.`0`.cotTrace"). If you want to ignore undefined values, enable 
+`ignoreUndefinedProperties`.
+At line:1 char:1
++ & "C:\nvm4w\nodejs/node.exe" "C:\Users\Manas\AppData\Roaming\npm/node ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Γ¥î  Migration ...nedProperties`.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    at validateUserInput 
+(M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\serializer.js:383:19)
+    at validateUserInput 
+(M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\serializer.js:375:13)
+    at validateUserInput 
+(M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\serializer.js:369:13)
+    at validateUserInput 
+(M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\serializer.js:375:13)
+    at validateDocumentData 
+(M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\write-batch.js:609:40)
+    at WriteBatch.set 
+(M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\write-batch.js:263:9)
+    at 
+M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\reference\document-reference.js:348:41
+    at 
+M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:110:30
+    at NoopContextManager.with 
+(M:\ABC\quality-ai-hub\backend\node_modules\@opentelemetry\api\src\context\NoopContextManager.ts:20:15)
+    at ContextAPI.with (M:\ABC\quality-ai-hub\backend\node_modules\@opentelemetry\api\src\api\context.ts:68:42)

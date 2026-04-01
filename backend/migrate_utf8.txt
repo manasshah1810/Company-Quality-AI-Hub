@@ -1,0 +1,41 @@
+﻿[dotenv@17.3.1] injecting env (0) from ..\..\.env -- tip: ≡ƒ¢í∩╕Å auth for agents: https://vestauth.com
+≡ƒöä  Starting Firestore migration...
+
+  ≡ƒôè  Writing dashboard/kpis...
+node.exe : Γ¥î  Migration failed: Error: Could not load the default credentials. Browse to 
+https://cloud.google.com/docs/authentication/getting-started for more information.
+At line:1 char:1
++ & "C:\nvm4w\nodejs/node.exe" "C:\Users\Manas\AppData\Roaming\npm/node ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Γ¥î  Migration ...re information.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    at GoogleAuth.getApplicationDefaultAsync (M:\ABC\quality-ai-hub\backend\node_modules\google-gax\node_modules\google
+-auth-library\build\src\auth\googleauth.js:287:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async GoogleAuth._GoogleAuth_determineClient (M:\ABC\quality-ai-hub\backend\node_modules\google-gax\node_modules
+\google-auth-library\build\src\auth\googleauth.js:834:32)
+    at async GoogleAuth.getClient (M:\ABC\quality-ai-hub\backend\node_modules\google-gax\node_modules\google-auth-libra
+ry\build\src\auth\googleauth.js:698:20)
+    at async GrpcClient._getCredentials (M:\ABC\quality-ai-hub\backend\node_modules\google-gax\src\grpc.ts:209:20)
+    at async GrpcClient.createStub (M:\ABC\quality-ai-hub\backend\node_modules\google-gax\src\grpc.ts:426:19)
+Caused by: Error
+    at _firestore._traceUtil.startActiveSpan 
+(M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\write-batch.js:438:27)
+    at 
+M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:110:30
+    at NoopContextManager.with 
+(M:\ABC\quality-ai-hub\backend\node_modules\@opentelemetry\api\src\context\NoopContextManager.ts:20:15)
+    at ContextAPI.with (M:\ABC\quality-ai-hub\backend\node_modules\@opentelemetry\api\src\api\context.ts:68:42)
+    at NoopTracer.startActiveSpan 
+(M:\ABC\quality-ai-hub\backend\node_modules\@opentelemetry\api\src\trace\NoopTracer.ts:87:27)
+    at ProxyTracer.startActiveSpan 
+(M:\ABC\quality-ai-hub\backend\node_modules\@opentelemetry\api\src\trace\ProxyTracer.ts:51:20)
+    at EnabledTraceUtil.startActiveSpan 
+(M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:102:28)
+    at WriteBatch.commit 
+(M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\write-batch.js:436:43)
+    at 
+M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\reference\document-reference.js:350:31
+    at 
+M:\ABC\quality-ai-hub\backend\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:110:30
