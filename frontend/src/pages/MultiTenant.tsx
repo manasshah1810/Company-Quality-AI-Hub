@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { currentBrand } from "@/config/branding";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -200,7 +201,7 @@ export default function MultiTenant() {
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
     doc.text("Note: Full simulation logs available in CSV format. Use 'Export CSV' to download raw performance metrics for external analysis tools.", margin, pageHeight - 15);
-    doc.text("© 2026 Quality AI Hub | Multi-Tenant Audit Report", margin, pageHeight - 10);
+    doc.text(`© 2026 ${currentBrand.name} | Multi-Tenant Audit Report`, margin, pageHeight - 10);
 
     // Save the PDF
     doc.save(`audit-report-${targetClientName.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.pdf`);
@@ -355,7 +356,7 @@ export default function MultiTenant() {
       {/* Content - only show when data is loaded */}
       {!isLoading && !error && (
         <>
-          <PageHeader title="Cognify Client Dashboard" subtitle="Multi-tenant health monitoring across custom integrations (Section 4.4)" />
+          <PageHeader title={`${currentBrand.name} Client Dashboard`} subtitle="Multi-tenant health monitoring across custom integrations (Section 4.4)" />
 
           {/* Global & Benchmarking Health Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

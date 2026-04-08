@@ -3,9 +3,10 @@ import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, TestTube2, Sparkles, HeartPulse, Database, Bot, Building2, BarChart3, BookOpen, Zap,
-  ChevronLeft, ChevronRight, GitBranch, Microscope, Zap as ExecuteIcon
+  ChevronLeft, ChevronRight, GitBranch, Microscope
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { currentBrand } from "@/config/branding";
 
 const navItems = [
   { path: "/dashboard", label: "Command Center", icon: LayoutDashboard },
@@ -35,14 +36,22 @@ export function AppSidebar() {
       {/* Logo Section */}
       <div className={`flex items-center justify-center ${collapsed ? 'h-20' : 'h-32'} border-b border-sidebar-border bg-sidebar overflow-hidden px-2`}>
         <div className={`flex ${collapsed ? 'flex-row' : 'flex-col'} items-center gap-2`}>
-          <img
-            src="/Final Logo.png"
-            alt="Quality AI Hub Logo"
-            className={`${collapsed ? 'h-10 w-10' : 'h-14 w-auto'} object-contain transition-all duration-300`}
-          />
+          {currentBrand.logoImage ? (
+            <img
+              src={currentBrand.logoImage}
+              alt={`${currentBrand.name} Logo`}
+              className={`${collapsed ? 'h-10 w-10' : 'h-14 w-auto'} object-contain transition-all duration-300`}
+            />
+          ) : (
+            <div className={`font-heading font-black text-primary ${collapsed ? 'text-xl' : 'text-3xl'}`}>
+              {currentBrand.logoText}
+            </div>
+          )}
           {!collapsed && (
             <div className="flex flex-col items-center">
-              <span className="font-heading font-black text-sidebar-foreground text-base leading-none tracking-tight">Quality AI Hub</span>
+              <span className="font-heading font-black text-sidebar-foreground text-base leading-none tracking-tight text-center px-1">
+                {currentBrand.name}
+              </span>
               <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">Testing Suite</span>
             </div>
           )}
