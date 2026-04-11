@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { currentBrand } from "@/config/branding";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -201,7 +200,7 @@ export default function MultiTenant() {
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
     doc.text("Note: Full simulation logs available in CSV format. Use 'Export CSV' to download raw performance metrics for external analysis tools.", margin, pageHeight - 15);
-    doc.text(`© 2026 ${currentBrand.name} | Multi-Tenant Audit Report`, margin, pageHeight - 10);
+    doc.text("© 2026 Cogniify Quality AI Hub | Multi-Tenant Audit Report", margin, pageHeight - 10);
 
     // Save the PDF
     doc.save(`audit-report-${targetClientName.replace(/\s+/g, '-').toLowerCase()}-${new Date().getTime()}.pdf`);
@@ -264,11 +263,17 @@ export default function MultiTenant() {
   };
 
   const regions = ["All Regions", "North America", "EMEA", "APAC", "LATAM"];
-  const avgHealth = tenantClients.length > 0 ? Math.round(tenantClients.reduce((acc: any, c: any) => acc + c.healthScore, 0) / tenantClients.length) : 0;
-  const totalSuites = tenantClients.reduce((acc: any, c: any) => acc + c.activeSuites, 0);
-  const avgPassRate = tenantClients.length > 0 ? +(tenantClients.reduce((acc: any, c: any) => acc + c.passRate, 0) / tenantClients.length).toFixed(1) : 0;
-  const avgSuites = tenantClients.length > 0 ? Math.round(totalSuites / tenantClients.length) : 0;
-  const atRiskTenants = [...tenantClients].sort((a: any, b: any) => a.healthScore - b.healthScore).slice(0, 3);
+
+  const filteredTenants = tenantClients.filter(client =>
+    (selectedRegion === "All Regions" || client.region === selectedRegion) &&
+    (selectedClient === "All Clients" || client.name === selectedClient)
+  );
+
+  const avgHealth = filteredTenants.length > 0 ? Math.round(filteredTenants.reduce((acc: any, c: any) => acc + c.healthScore, 0) / filteredTenants.length) : 0;
+  const totalSuites = filteredTenants.reduce((acc: any, c: any) => acc + c.activeSuites, 0);
+  const avgPassRate = filteredTenants.length > 0 ? +(filteredTenants.reduce((acc: any, c: any) => acc + c.passRate, 0) / filteredTenants.length).toFixed(1) : 0;
+  const avgSuites = filteredTenants.length > 0 ? Math.round(totalSuites / filteredTenants.length) : 0;
+  const atRiskTenants = [...filteredTenants].sort((a: any, b: any) => a.healthScore - b.healthScore).slice(0, 3);
 
   useEffect(() => {
     if (!simRunning) return;
@@ -356,7 +361,7 @@ export default function MultiTenant() {
       {/* Content - only show when data is loaded */}
       {!isLoading && !error && (
         <>
-          <PageHeader title={`${currentBrand.name} Client Dashboard`} subtitle="Multi-tenant health monitoring across custom integrations (Section 4.4)" />
+          <PageHeader title="Cognify Client Dashboard" subtitle="Multi-tenant health monitoring across custom integrations (Section 4.4)" />
 
           {/* Global & Benchmarking Health Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -758,7 +763,7 @@ export default function MultiTenant() {
 
           {/* Client Health Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {tenantClients.map(client => (
+            {filteredTenants.map(client => (
               <div
                 key={client.name}
                 onClick={() => setSelectedClient(client.name)}
@@ -991,55 +996,53 @@ export default function MultiTenant() {
           </div>
 
           {/* AI SLA Analysis Report (Section 9.4) */}
-          {
-            !simRunning && simReport && (
-              <div className="mt-8 p-6 rounded-2xl glass-strong border border-success/30 bg-success/5 animate-in slide-in-from-bottom-6 duration-1000">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="flex items-center gap-5">
-                    <div className="p-4 rounded-2xl bg-success/10 text-success border border-success/20 shadow-glow-success relative">
-                      <ShieldCheck className="w-8 h-8" />
-                      <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-success animate-ping" />
-                    </div>
-                    <div>
-                      <h4 className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
-                        AI Performance Analysis Report <span className="text-[10px] text-muted-foreground font-mono bg-black/40 px-2 py-0.5 rounded border border-white/5 uppercase tracking-widest">Winnie-QA-01</span>
-                      </h4>
-                      <p className="text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed italic">
-                        "{simReport}"
-                      </p>
-                    </div>
+          {!simRunning && simReport && (
+            <div className="mt-8 p-6 rounded-2xl glass-strong border border-success/30 bg-success/5 animate-in slide-in-from-bottom-6 duration-1000">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-5">
+                  <div className="p-4 rounded-2xl bg-success/10 text-success border border-success/20 shadow-glow-success relative">
+                    <ShieldCheck className="w-8 h-8" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-success animate-ping" />
                   </div>
-                  <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-black/40 border border-white/10 min-w-[160px] text-center">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Compliance Status</p>
-                    <div className={`text-xl font-black ${simReport.includes("COMPLIANT") ? "text-success" : "text-destructive"}`}>
-                      {simReport.includes("COMPLIANT") ? "PASSED" : "DEGRADED"}
-                    </div>
-                    <div className="text-[8px] text-muted-foreground mt-2 flex items-center gap-1">
-                      <BarChart3 className="w-2.5 h-2.5" /> Platform SLA: 99.9%
-                    </div>
+                  <div>
+                    <h4 className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
+                      AI Performance Analysis Report <span className="text-[10px] text-muted-foreground font-mono bg-black/40 px-2 py-0.5 rounded border border-white/5 uppercase tracking-widest">Winnie-QA-01</span>
+                    </h4>
+                    <p className="text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed italic">
+                      "{simReport}"
+                    </p>
                   </div>
                 </div>
-
-                <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-4 h-4 text-primary" />
-                    <span className="text-[11px] text-muted-foreground"><strong className="text-foreground">Architectural Insight:</strong> Horizontal pod autoscaling met capacity in 42s.</span>
+                <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-black/40 border border-white/10 min-w-[160px] text-center">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Compliance Status</p>
+                  <div className={`text-xl font-black ${simReport.includes("COMPLIANT") ? "text-success" : "text-destructive"}`}>
+                    {simReport.includes("COMPLIANT") ? "PASSED" : "DEGRADED"}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Activity className="w-4 h-4 text-primary" />
-                    <span className="text-[11px] text-muted-foreground"><strong className="text-foreground">Availability Zones:</strong> US-EAST-1/2 fully utilized.</span>
-                  </div>
-                  <div className="flex items-center gap-3 ml-auto">
-                    <button
-                      onClick={() => handleExportReport()}
-                      className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-[10px] font-bold shadow-glow uppercase tracking-widest flex items-center gap-2 hover:bg-primary/80 transition-all">
-                      <Download className="w-3.5 h-3.5" /> Export Audit Report (PDF)
-                    </button>
+                  <div className="text-[8px] text-muted-foreground mt-2 flex items-center gap-1">
+                    <BarChart3 className="w-2.5 h-2.5" /> Platform SLA: 99.9%
                   </div>
                 </div>
               </div>
-            )
-          }
+
+              <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-4 h-4 text-primary" />
+                  <span className="text-[11px] text-muted-foreground"><strong className="text-foreground">Architectural Insight:</strong> Horizontal pod autoscaling met capacity in 42s.</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Activity className="w-4 h-4 text-primary" />
+                  <span className="text-[11px] text-muted-foreground"><strong className="text-foreground">Availability Zones:</strong> US-EAST-1/2 fully utilized.</span>
+                </div>
+                <div className="flex items-center gap-3 ml-auto">
+                  <button
+                    onClick={() => handleExportReport()}
+                    className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-[10px] font-bold shadow-glow uppercase tracking-widest flex items-center gap-2 hover:bg-primary/80 transition-all">
+                    <Download className="w-3.5 h-3.5" /> Export Audit Report (PDF)
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Real-Time Tenant Assignment Tracking */}
           {selectedClient !== "All Clients" && (
@@ -1094,62 +1097,60 @@ export default function MultiTenant() {
           <DataTable data={clientTiles} columns={tileColumns} />
 
           {/* AI RCA Modal */}
-          {
-            selectedTileRca && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-md px-4" onClick={() => setSelectedTileRca(null)}>
-                <div className="glass-strong rounded-2xl p-6 w-full max-w-xl border border-primary/20 shadow-glow-primary animate-in zoom-in-95" onClick={e => e.stopPropagation()}>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
-                        <Bot className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h2 className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
-                          Winnie Root Cause Analysis (RCA)
-                        </h2>
-                        <p className="text-xs text-muted-foreground">SLA Breach Detected for: <span className="text-primary font-mono">{selectedTileRca.tileName}</span></p>
-                      </div>
+          {selectedTileRca && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-md px-4" onClick={() => setSelectedTileRca(null)}>
+              <div className="glass-strong rounded-2xl p-6 w-full max-w-xl border border-primary/20 shadow-glow-primary animate-in zoom-in-95" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
+                      <Bot className="w-6 h-6" />
                     </div>
-                    <button onClick={() => setSelectedTileRca(null)} className="p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all">
-                      <X className="w-5 h-5 text-muted-foreground" />
-                    </button>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-xl bg-black/40 border border-white/5">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${selectedTileRca.tileName.includes("Parser") ? "bg-warning/20 text-warning" : "bg-primary/20 text-primary"}`}>
-                          Source: {selectedTileRca.tileName.includes("Parser") ? "Client Logic Overload" : "Core Engine Latency"}
-                        </div>
-                      </div>
-                      <h4 className="text-xs font-bold text-foreground mb-1 flex items-center gap-1.5"><Info className="w-3.5 h-3.5 text-primary" /> Reasoning</h4>
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                        {selectedTileRca.tileName.includes("Parser")
-                          ? "The custom Python preprocessing script is attempting to deduplicate 50,000+ nested JSON entities within the client's integration, causing a 400ms overhead before reaching our core API."
-                          : "We detected localized P95 spikes during LLM synthesis for complex extraction tiles in this regional zone."}
-                      </p>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-success/5 border border-success/20">
-                      <h4 className="text-xs font-bold text-success mb-1 flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" /> Winnie's Recommendation</h4>
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                        {selectedTileRca.tileName.includes("Parser")
-                          ? "Recommend moving deduplication logic to the pre-upload batch phase (Section 4.1). Our core engine is currently waiting on client-side compute."
-                          : "Automatic migration to high-throughput compute cluster initiated. Future runs should see a 30% reduction in P95 latency."}
-                      </p>
+                    <div>
+                      <h2 className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
+                        Winnie Root Cause Analysis (RCA)
+                      </h2>
+                      <p className="text-xs text-muted-foreground">SLA Breach Detected for: <span className="text-primary font-mono">{selectedTileRca.tileName}</span></p>
                     </div>
                   </div>
-
-                  <button
-                    onClick={() => setSelectedTileRca(null)}
-                    className="w-full mt-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/80 transition-all shadow-glow uppercase tracking-widest"
-                  >
-                    Close Analysis
+                  <button onClick={() => setSelectedTileRca(null)} className="p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all">
+                    <X className="w-5 h-5 text-muted-foreground" />
                   </button>
                 </div>
+
+                <div className="space-y-4">
+                  <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${selectedTileRca.tileName.includes("Parser") ? "bg-warning/20 text-warning" : "bg-primary/20 text-primary"}`}>
+                        Source: {selectedTileRca.tileName.includes("Parser") ? "Client Logic Overload" : "Core Engine Latency"}
+                      </div>
+                    </div>
+                    <h4 className="text-xs font-bold text-foreground mb-1 flex items-center gap-1.5"><Info className="w-3.5 h-3.5 text-primary" /> Reasoning</h4>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {selectedTileRca.tileName.includes("Parser")
+                        ? "The custom Python preprocessing script is attempting to deduplicate 50,000+ nested JSON entities within the client's integration, causing a 400ms overhead before reaching our core API."
+                        : "We detected localized P95 spikes during LLM synthesis for complex extraction tiles in this regional zone."}
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-success/5 border border-success/20">
+                    <h4 className="text-xs font-bold text-success mb-1 flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" /> Winnie's Recommendation</h4>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {selectedTileRca.tileName.includes("Parser")
+                        ? "Recommend moving deduplication logic to the pre-upload batch phase (Section 4.1). Our core engine is currently waiting on client-side compute."
+                        : "Automatic migration to high-throughput compute cluster initiated. Future runs should see a 30% reduction in P95 latency."}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setSelectedTileRca(null)}
+                  className="w-full mt-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/80 transition-all shadow-glow uppercase tracking-widest"
+                >
+                  Close Analysis
+                </button>
               </div>
-            )
-          }
+            </div>
+          )}
 
           {selectedSLABreach && (
             <SLABreachDetail

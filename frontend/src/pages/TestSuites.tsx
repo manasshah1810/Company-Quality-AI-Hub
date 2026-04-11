@@ -30,7 +30,6 @@ export interface TestSuite {
 
 export default function TestSuites() {
   const navigate = useNavigate();
-  const [showGenerator, setShowGenerator] = useState(false);
   const [filterModule, setFilterModule] = useState("All");
   const [filterType, setFilterType] = useState("All");
   const [filterStatus, setFilterStatus] = useState("All");
@@ -239,7 +238,7 @@ export default function TestSuites() {
             </button>
           )}
           <button
-            onClick={() => setShowGenerator(true)}
+            onClick={() => navigate("/ai-test-generation")}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 transition-colors text-sm font-semibold"
           >
             <Plus className="w-4 h-4" /> New Suite
@@ -352,16 +351,6 @@ export default function TestSuites() {
         )}
       />
 
-      {/* NL Generator Modal */}
-      {showGenerator && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-background/60 backdrop-blur-sm" onClick={() => setShowGenerator(false)}>
-          <div className="glass-strong rounded-2xl p-6 w-full max-w-2xl" onClick={e => e.stopPropagation()}>
-            <h2 className="font-heading font-bold text-lg text-foreground mb-4">Generate Test Suite with AI</h2>
-            <NLTestGenerator />
-            <button onClick={() => setShowGenerator(false)} className="mt-4 text-xs text-muted-foreground hover:text-foreground">Close</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

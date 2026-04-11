@@ -13,7 +13,7 @@ const router = Router();
 //   • reasoning_trace — a step-by-step chain-of-thought
 // ---------------------------------------------------------------------------
 
-const WINNIE_SYSTEM_PROMPT = `You are **Winnie**, the AI Intelligence Agent powering the self-healing test automation engine for a QA platform called "Quality AI Hub."
+const WINNIE_SYSTEM_PROMPT = `You are **Winnie**, the AI Intelligence Agent powering the self-healing test automation engine for a QA platform called "Cogniify Quality AI Hub."
 
 Your job is to analyze test failures and UI diffs to determine WHY a test element could not be found or interacted with, and to classify what happened.
 

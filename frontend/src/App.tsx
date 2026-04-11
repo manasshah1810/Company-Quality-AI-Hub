@@ -22,14 +22,24 @@ import DebugCenter from "./pages/DebugCenter";
 import ExecutionResults from "./pages/ExecutionResults";
 
 import { useEffect } from "react";
-import { currentBrand } from "@/config/branding";
+import { getBrand } from "@/lib/brandConfig";
 
 const queryClient = new QueryClient();
 
 const App = () => {
+  const brand = getBrand();
+
   useEffect(() => {
-    document.title = `${currentBrand.name} — AI-Native Quality Engineering`;
-  }, []);
+    document.title = `${brand.name} — AI-Native Quality Engineering`;
+
+    // Update favicon if not text logo
+    if (!brand.isTextLogo) {
+      const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (link) {
+        link.href = brand.logo;
+      }
+    }
+  }, [brand]);
 
   return (
     <ThemeProvider>

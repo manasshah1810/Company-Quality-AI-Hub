@@ -8,8 +8,8 @@ import { z } from "zod";
 import fetch from "node-fetch";
 
 /**
- * Quality AI Hub MCP Server
- * ------------------------
+ * Cogniify Quality AI Hub MCP Server
+ * ----------------------------------
  * Exposes core platform capabilities (Trigger Test, Generate Data)
  * as standard Model Context Protocol (MCP) tools.
  */
@@ -110,7 +110,7 @@ class QualityAIHubMCPServer {
     async run() {
         const transport = new StdioServerTransport();
         await this.server.connect(transport);
-        console.error("🚀 Quality AI Hub MCP Server running on stdio");
+        console.error("🚀 Cogniify Quality AI Hub MCP Server running on stdio");
     }
 }
 

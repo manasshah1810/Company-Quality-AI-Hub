@@ -1,21 +1,12 @@
+import "./env.js"; // CRITICAL: Load env variables before any other imports
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 
-// CRITICAL: Load .env BEFORE any other imports that use env vars
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const envPath = path.resolve(__dirname, "../../.env");
-console.log("📁 Loading .env from:", envPath);
-console.log("📁 .env exists:", fs.existsSync(envPath));
-const result = dotenv.config({ path: envPath, override: true });
-console.log("📁 dotenv.config result:", result.parsed ? "✓ Successfully loaded" : "✗ Failed to load");
-if (result.parsed) {
-    console.log("✓ API Key loaded, starts with:", result.parsed.VITE_ANTHROPIC_API_KEY?.substring(0, 30) ?? "NOT FOUND");
-}
 
 // Route modules - imported AFTER dotenv.config
 import dashboardRoutes from "./routes/dashboard.js";
@@ -122,10 +113,10 @@ app.use("/api/regression-analysis", regressionAnalysisRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error("❌ Unhandled error:", err);
-    
+
     const statusCode = err.statusCode || 500;
     const message = err.message || "Internal server error";
-    
+
     return res.status(statusCode).json({
         error: message,
         timestamp: new Date().toISOString(),

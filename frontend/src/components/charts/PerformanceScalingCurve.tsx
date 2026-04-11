@@ -69,13 +69,15 @@ export function PerformanceScalingCurve({ stressLevel, simMetrics }: Performance
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "rgba(0,0,0,0.8)",
-                border: "1px solid rgba(255,255,255,0.1)",
+                backgroundColor: "rgba(0,0,0,0.9)",
+                border: "1px solid rgba(255,255,255,0.2)",
                 borderRadius: "8px",
-                padding: "8px"
+                padding: "8px",
+                color: "#fff"
               }}
+              itemStyle={{ color: "#fff" }}
               cursor={{ stroke: "rgba(255,255,255,0.1)" }}
-              labelStyle={{ color: "rgb(200, 200, 200)", fontSize: "10px" }}
+              labelStyle={{ color: "#fff", fontSize: "12px", fontWeight: "bold", marginBottom: "4px" }}
               formatter={(value: any) => [`${value}ms`, ""]}
             />
             <ReferenceLine

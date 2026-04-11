@@ -37,7 +37,38 @@ export default function SelfHealing() {
   const [showDiffId, setShowDiffId] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<HealingEvent | null>(null);
   const [showAllShadow, setShowAllShadow] = useState(false);
-
+  const [flakyTests, setFlakyTests] = useState([
+    {
+      id: "FT-001",
+      name: "checkout.spec.ts > Cart Total Calculation",
+      suite: "E-Commerce Core",
+      runHistory: [true, false, true, false, true, true, false, false, true, true],
+      failureRate: 40,
+      rootCause: "Async race condition in price recalculation",
+      aiSuggestion: "Add explicit wait for network idle before assertion",
+      confidence: 85
+    },
+    {
+      id: "FT-002",
+      name: "form-validation.spec.ts > Email Validation",
+      suite: "Form Handler",
+      runHistory: [true, true, false, true, true, false, true, true, true, true],
+      failureRate: 30,
+      rootCause: "Timezone-dependent date validation",
+      aiSuggestion: "Mock system clock before running test",
+      confidence: 78
+    },
+    {
+      id: "FT-003",
+      name: "api-integration.spec.ts > External API Response",
+      suite: "Integration Tests",
+      runHistory: [false, true, true, false, true, false, true, true, false, true],
+      failureRate: 50,
+      rootCause: "Intermittent timeout from 3rd-party service",
+      aiSuggestion: "Increase timeout threshold and add retry logic",
+      confidence: 72
+    }
+  ]);
   const { data, isLoading, error } = useApiData("healing-events", "/api/healing/events");
   const { setContextData } = useChatContext();
 
@@ -70,41 +101,6 @@ export default function SelfHealing() {
     return data;
   }, []);
 
-  // Generate flaky test data
-  const flakyTests = useMemo(() => {
-    return [
-      {
-        id: "FT-001",
-        name: "checkout.spec.ts > Cart Total Calculation",
-        suite: "E-Commerce Core",
-        runHistory: [true, false, true, false, true, true, false, false, true, true],
-        failureRate: 40,
-        rootCause: "Async race condition in price recalculation",
-        aiSuggestion: "Add explicit wait for network idle before assertion",
-        confidence: 85
-      },
-      {
-        id: "FT-002",
-        name: "form-validation.spec.ts > Email Validation",
-        suite: "Form Handler",
-        runHistory: [true, true, false, true, true, false, true, true, true, true],
-        failureRate: 30,
-        rootCause: "Timezone-dependent date validation",
-        aiSuggestion: "Mock system clock before running test",
-        confidence: 78
-      },
-      {
-        id: "FT-003",
-        name: "api-integration.spec.ts > External API Response",
-        suite: "Integration Tests",
-        runHistory: [false, true, true, false, true, false, true, true, false, true],
-        failureRate: 50,
-        rootCause: "Intermittent timeout from 3rd-party service",
-        aiSuggestion: "Increase timeout threshold and add retry logic",
-        confidence: 72
-      }
-    ];
-  }, []);
 
 
   if (isLoading || !data) return <div className="p-8 text-center text-muted-foreground animate-pulse">Initializing Winnie AI Core...</div>;
@@ -163,6 +159,23 @@ export default function SelfHealing() {
       description: "Automatic PR created for verified AI healing actions (90%+ Confidence).",
       icon: <Target className="w-4 h-4 text-primary fill-primary/20" />
     });
+  };
+
+  const handleFixFlakyTest = (id: string) => {
+    const test = flakyTests.find(t => t.id === id);
+    if (!test) return;
+
+    toast.promise(
+      new Promise((resolve) => setTimeout(resolve, 2000)),
+      {
+        loading: `Analyzing & Patching Flaky Test: ${test.name}...`,
+        success: () => {
+          setFlakyTests(prev => prev.filter(t => t.id !== id));
+          return `Auto-Fix Applied: ${test.id} stability logic updated. PR submitted to main.`;
+        },
+        error: "Auto-fix failed."
+      }
+    );
   };
 
   const filtered = healingEvents.filter(e => {
@@ -418,7 +431,10 @@ export default function SelfHealing() {
                   <span className="text-[8px] text-muted-foreground">Confidence:</span>
                   <span className="text-[9px] font-bold text-foreground">{test.confidence}%</span>
                 </div>
-                <button className="px-2 py-1 rounded bg-primary/10 text-primary text-[9px] font-bold border border-primary/20 hover:bg-primary/20 transition-all">
+                <button
+                  onClick={() => handleFixFlakyTest(test.id)}
+                  className="px-2 py-1 rounded bg-primary/10 text-primary text-[9px] font-bold border border-primary/20 hover:bg-primary/20 transition-all"
+                >
                   Approve & Auto-Fix
                 </button>
               </div>

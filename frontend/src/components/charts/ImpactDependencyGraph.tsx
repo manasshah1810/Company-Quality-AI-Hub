@@ -32,16 +32,16 @@ export function ImpactDependencyGraph({
     // Place changed service on the left
     const changedNode = nodes.find((n) => n.type === "changed");
     if (changedNode) {
-      layout[changedNode.id] = { x: 50, y: 250 };
+      layout[changedNode.id] = { x: 150, y: 200 };
     }
 
     // Place affected services on the right, spread vertically
     const affectedNodes = nodes.filter((n) => n.type === "affected");
-    const spacing = affectedNodes.length > 0 ? 400 / affectedNodes.length : 100;
+    const spacing = affectedNodes.length > 0 ? 320 / Math.max(1, affectedNodes.length - 1) : 0;
     affectedNodes.forEach((node, index) => {
       layout[node.id] = {
-        x: 350,
-        y: 80 + index * spacing,
+        x: 650,
+        y: affectedNodes.length === 1 ? 200 : 40 + index * spacing,
       };
     });
 
@@ -55,7 +55,7 @@ export function ImpactDependencyGraph({
         <h3 className="text-sm font-bold text-foreground">Service Dependency Map</h3>
       </div>
 
-      <div className="relative bg-muted/30 border border-border/50 rounded-xl p-6 overflow-hidden" style={{ height: "400px" }}>
+      <div className="relative bg-muted/30 border border-border/50 rounded-xl overflow-hidden" style={{ height: "400px" }}>
         <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: "none" }}>
           {/* Draw edges/arrows */}
           {edges.map((edge, idx) => {
@@ -79,9 +79,9 @@ export function ImpactDependencyGraph({
                   </marker>
                 </defs>
                 <line
-                  x1={source.x + 60}
+                  x1={source.x + 85}
                   y1={source.y}
-                  x2={target.x - 40}
+                  x2={target.x - 85}
                   y2={target.y}
                   stroke="rgba(168, 85, 247, 0.3)"
                   strokeWidth="2"
@@ -94,7 +94,7 @@ export function ImpactDependencyGraph({
         </svg>
 
         {/* Nodes */}
-        <div className="relative w-full h-full">
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
           {nodes.map((node) => {
             const pos = graphData[node.id];
             if (!pos) return null;
@@ -107,7 +107,7 @@ export function ImpactDependencyGraph({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1 }}
-                className="absolute"
+                className="absolute pointer-events-auto"
                 style={{
                   left: `${pos.x}px`,
                   top: `${pos.y}px`,
@@ -117,10 +117,9 @@ export function ImpactDependencyGraph({
                 <div
                   className={`
                     flex flex-col items-center gap-2 px-4 py-3 rounded-lg border-2 min-w-max
-                    ${
-                      isChanged
-                        ? "bg-destructive/10 border-destructive text-destructive glow-red"
-                        : "bg-warning/10 border-warning text-warning glow-orange"
+                    ${isChanged
+                      ? "bg-destructive/10 border-destructive text-destructive glow-red"
+                      : "bg-warning/10 border-warning text-warning glow-orange"
                     }
                   `}
                 >

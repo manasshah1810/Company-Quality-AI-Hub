@@ -6,7 +6,7 @@ import {
   ChevronLeft, ChevronRight, GitBranch, Microscope
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { currentBrand } from "@/config/branding";
+import { getBrand } from "@/lib/brandConfig";
 
 const navItems = [
   { path: "/dashboard", label: "Command Center", icon: LayoutDashboard },
@@ -25,6 +25,7 @@ const navItems = [
 
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const brand = getBrand();
 
   return (
     <motion.aside
@@ -36,22 +37,20 @@ export function AppSidebar() {
       {/* Logo Section */}
       <div className={`flex items-center justify-center ${collapsed ? 'h-20' : 'h-32'} border-b border-sidebar-border bg-sidebar overflow-hidden px-2`}>
         <div className={`flex ${collapsed ? 'flex-row' : 'flex-col'} items-center gap-2`}>
-          {currentBrand.logoImage ? (
+          {brand.isTextLogo ? (
+            <div className={`flex items-center justify-center bg-primary text-primary-foreground font-black rounded-lg ${collapsed ? 'h-10 w-10 text-xs' : 'h-14 w-14 text-xl shadow-glow'}`}>
+              {brand.logo}
+            </div>
+          ) : (
             <img
-              src={currentBrand.logoImage}
-              alt={`${currentBrand.name} Logo`}
+              src={brand.logo}
+              alt={`${brand.name} Logo`}
               className={`${collapsed ? 'h-10 w-10' : 'h-14 w-auto'} object-contain transition-all duration-300`}
             />
-          ) : (
-            <div className={`font-heading font-black text-primary ${collapsed ? 'text-xl' : 'text-3xl'}`}>
-              {currentBrand.logoText}
-            </div>
           )}
           {!collapsed && (
             <div className="flex flex-col items-center">
-              <span className="font-heading font-black text-sidebar-foreground text-base leading-none tracking-tight text-center px-1">
-                {currentBrand.name}
-              </span>
+              <span className="font-heading font-black text-sidebar-foreground text-center text-sm leading-tight tracking-tight px-1">{brand.name}</span>
               <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">Testing Suite</span>
             </div>
           )}

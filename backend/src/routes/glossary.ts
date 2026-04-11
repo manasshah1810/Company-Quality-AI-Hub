@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { db } from "../config/firebase.js";
+import * as staticData from "../data/staticData.js";
 
 const router = Router();
 
@@ -9,30 +9,17 @@ const router = Router();
 // ──────────────────────────────────────────────────────────────────────────────
 router.get("/", async (req: Request, res: Response) => {
     try {
-        const tenantId = req.tenantId ?? "default";
-
-        const doc = await db
-            .collection("tenants")
-            .doc(tenantId)
-            .collection("tenantData")
-            .doc("kpiGlossary")
-            .get();
-
-        if (!doc.exists) {
-            const fallback = await db
-                .collection("tenants")
-                .doc("default")
-                .collection("tenantData")
-                .doc("kpiGlossary")
-                .get();
-
-            if (!fallback.exists) {
-                return res.status(404).json({ error: "KPI Glossary not found" });
-            }
-            return res.json(fallback.data());
-        }
-
-        return res.json(doc.data());
+        return res.json({
+            kpiDefinitions: staticData.kpiDefinitions,
+            formulaExamples: staticData.formulaExamples,
+            chartIndex: staticData.chartIndex,
+            aiModels: staticData.aiModels,
+            defectPredictions: staticData.defectPredictions,
+            bugLeakageTrend: staticData.bugLeakageTrend,
+            maintenanceTimeTrend: staticData.maintenanceTimeTrend,
+            coverageTreemap: staticData.coverageTreemap,
+            _timestamp: new Date().toISOString()
+        });
     } catch (err) {
         console.error("Error fetching KPI glossary:", err);
         return res.status(500).json({ error: "Internal server error" });

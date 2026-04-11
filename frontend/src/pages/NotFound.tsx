@@ -1,6 +1,5 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { currentBrand } from "@/config/branding";
 
 const NotFound = () => {
   const location = useLocation();
@@ -13,13 +12,7 @@ const NotFound = () => {
     <div className="flex min-h-screen items-center justify-center bg-muted">
       <div className="text-center space-y-6">
         <div className="flex justify-center mb-6">
-          {currentBrand.logoImage ? (
-            <img src={currentBrand.logoImage} alt={currentBrand.name} className="w-16 h-16 opacity-60 object-contain" />
-          ) : (
-            <div className="text-4xl font-black text-primary opacity-60">
-              {currentBrand.logoText}
-            </div>
-          )}
+          <img src="/Cogniify.png" alt="Cogniify Quality AI Hub" className="w-16 h-16 opacity-60" />
         </div>
         <h1 className="text-4xl font-bold">404</h1>
         <p className="text-xl text-muted-foreground">Oops! Page not found</p>

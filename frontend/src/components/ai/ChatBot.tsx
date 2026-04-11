@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { currentBrand } from "@/config/branding";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -12,7 +11,7 @@ interface Message {
   content: string;
 }
 
-const SYSTEM_PROMPT = `You are Winnie, the official QA Intelligence Agent for the ${currentBrand.name}. 
+const SYSTEM_PROMPT = `You are Winnie, the official QA Intelligence Agent for the Cogniify Quality AI Hub. 
 
 CORE KNOWLEDGE BASE (STRICT):
 - AJ-9980: A critical regression detected in the Tax-Logic edge case module due to localized P95 latency spikes (Section 4.1).
@@ -26,7 +25,7 @@ FORMATTING RULES:
 5. NO unnecessary conversational filler.
 
 STRICT GUARDRAILS:
-1. You only answer questions related to the ${currentBrand.name} project, QA automation, and the real-time data provided in the context below. 
+1. You only answer questions related to the Cogniify Quality AI Hub project, QA automation, and the real-time data provided in the context below. 
 2. The 'CURRENT PAGE DATA' is the ABSOLUTE TRUTH. If the user asks about the current page, ONLY use the data provided there.
 3. If a user asks anything unrelated (general chat, jokes, other software, etc.), politely decline.
 4. Be concise, technical, and data-driven.

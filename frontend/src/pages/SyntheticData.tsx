@@ -292,50 +292,50 @@ export default function SyntheticData() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Generator Panel */}
-        <div className="glass rounded-xl p-5 space-y-4">
-          <div className="flex flex-col gap-4 mb-4 pb-4 border-b border-border/50">
+        <div className="bg-[#1e293b] rounded-2xl p-6 space-y-5 border border-white/5 shadow-xl">
+          <div className="flex flex-col gap-4 mb-4 pb-4 border-b border-white/10">
             <div className="flex items-center justify-between">
-              <h3 className="font-heading font-semibold text-sm text-foreground">Generator Panel</h3>
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-bold border border-primary/20 uppercase tracking-tighter">
-                <Zap className="w-2.5 h-2.5 fill-current" /> Scalability Engine 9.1
+              <h3 className="font-heading font-black text-[11px] text-slate-100 uppercase tracking-widest">Generator Engine</h3>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/25">
+                <Zap className="w-2.5 h-2.5 fill-current" /> Scalability 9.1
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-2 rounded-lg bg-background/40 border border-border/50">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-[#0f172a] border border-white/5">
               <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${schemaSynced ? "bg-success shadow-[0_0_8px_rgba(34,197,94,0.5)]" : "bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse"}`} />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground italic">
+                <div className={`w-2 h-2 rounded-full ${schemaSynced ? "bg-success shadow-[0_0_10px_rgba(34,197,94,0.6)]" : "bg-destructive shadow-[0_0_10px_rgba(239,68,68,0.6)] animate-pulse"}`} />
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                   Schema: <span className={schemaSynced ? "text-success" : "text-destructive"}>{schemaSynced ? "Synced (v2.4.2)" : "Drift Detected"}</span>
                 </span>
               </div>
               <button
                 onClick={handleSyncSchema}
                 disabled={generating}
-                className="p-1.5 rounded hover:bg-muted/50 transition-all text-primary disabled:opacity-30"
+                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-all text-primary disabled:opacity-30 border border-white/5"
                 title="Sync with Backend Schema"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${generating ? "animate-spin" : ""}`} />
+                <RefreshCw className={`w-4 h-4 ${generating ? "animate-spin" : ""}`} />
               </button>
             </div>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Form Type</label>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Form Definition</label>
             <select
               value={formType}
               onChange={(e) => setFormType(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground text-sm border border-border/50 focus:outline-none focus:ring-1 focus:ring-primary">
-              <option value="W2">W2</option>
-              <option value="1040">1040</option>
-              <option value="1120S">1120S</option>
-              <option value="K-1">K-1</option>
-              <option value="Schedule C">Schedule C</option>
-              <option value="Schedule E">Schedule E</option>
+              className="w-full px-4 py-3 rounded-xl bg-[#0f172a] text-slate-100 text-sm border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary h-12">
+              <option value="W2">W2 - Wage & Tax Statement</option>
+              <option value="1040">1040 - US Individual Income Tax</option>
+              <option value="1120S">1120S - S-Corp Return</option>
+              <option value="K-1">K-1 - Partner Share of Income</option>
+              <option value="Schedule C">Schedule C - Profit/Loss</option>
+              <option value="Schedule E">Schedule E - Supplemental Income</option>
             </select>
           </div>
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs text-muted-foreground block">Record Count</label>
-              <span className="text-[10px] font-mono text-primary font-bold">{recordCount.toLocaleString()} Records</span>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Volume Control</label>
+              <span className="text-[10px] font-mono text-primary font-black bg-primary/10 px-2 py-0.5 rounded border border-primary/20">{recordCount.toLocaleString()} Records</span>
             </div>
             <input
               type="range"
@@ -344,16 +344,16 @@ export default function SyntheticData() {
               step={1000}
               value={recordCount}
               onChange={(e) => setRecordCount(parseInt(e.target.value))}
-              className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+              className="w-full h-2 bg-[#0f172a] rounded-lg appearance-none cursor-pointer accent-primary border border-white/5"
             />
-            <div className="flex justify-between text-[10px] text-muted-foreground mt-1 font-mono"><span>100</span><span>100,000+</span></div>
+            <div className="flex justify-between text-[9px] text-slate-500 mt-2 font-black uppercase tracking-widest"><span>Min: 100</span><span>Max: 100K+</span></div>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Complexity Tier (PRD Section 2)</label>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Intelligence Complexity</label>
             <select
               value={complexity}
               onChange={(e) => setComplexity(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground text-sm border border-border/50 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full px-4 py-3 rounded-xl bg-[#0f172a] text-slate-100 text-sm border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary h-12"
             >
               <option value="Simple">Simple (Standard Returns)</option>
               <option value="Multi-Entity">Multi-Entity (Corporate/K-1 Mapping)</option>
@@ -361,8 +361,8 @@ export default function SyntheticData() {
             </select>
           </div>
           <div>
-            <label className="text-[10px] text-primary/80 mb-1.5 flex items-center gap-1.5 uppercase tracking-widest font-bold">
-              <Sparkles className="w-3 h-3 text-primary animate-pulse" /> Scenario Templates (PRD Section 5)
+            <label className="text-[10px] text-primary mb-2 flex items-center gap-2 uppercase tracking-[0.2em] font-black">
+              <Sparkles className="w-4 h-4 text-primary animate-pulse" /> Strategy Templates
             </label>
             <select
               value={scenarioTemplate}
@@ -373,17 +373,17 @@ export default function SyntheticData() {
                   setScenarioPrompt(selected.prompt);
                 }
               }}
-              className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground text-sm border border-border/50 focus:outline-none focus:ring-1 focus:ring-primary mb-2"
+              className="w-full px-4 py-3 rounded-xl bg-[#0f172a] text-slate-100 text-sm border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary mb-3 h-12"
             >
-              <option value="">Select a template...</option>
+              <option value="">Select an intelligence strategy...</option>
               {scenarioTemplates.map(t => (
                 <option key={t.id} value={t.id}>{t.label}</option>
               ))}
-              <option value="custom">Custom (Free Text)</option>
+              <option value="custom">Manual Definition (Advanced)</option>
             </select>
             {scenarioTemplate && scenarioTemplate !== "custom" && (
-              <div className="mb-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
-                <p className="text-[9px] text-muted-foreground">
+              <div className="mb-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
+                <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
                   {scenarioTemplates.find(t => t.id === scenarioTemplate)?.description}
                 </p>
               </div>
@@ -393,133 +393,163 @@ export default function SyntheticData() {
                 value={scenarioPrompt}
                 onChange={(e) => setScenarioPrompt(e.target.value)}
                 placeholder="Describe the specific scenario you want to synthesize..."
-                className="w-full h-20 px-3 py-2 rounded-xl bg-primary/5 text-foreground text-xs border border-primary/20 focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/40 resize-none scrollbar-thin font-mono leading-relaxed"
+                className="w-full h-24 px-4 py-3 rounded-xl bg-[#0f172a] text-slate-100 text-xs border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-600 resize-none font-mono leading-relaxed"
               />
             )}
-            <div className="flex items-center gap-1.5 mt-2.5 px-2 py-1 rounded bg-sidebar/40 border border-border/50">
-              <Bot className="w-3 h-3 text-primary" />
-              <p className="text-[9px] text-muted-foreground leading-none">
-                Winnie will dynamically adjust the synthetic distribution weights.
+            <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-[#0f172a] border border-white/5">
+              <Bot className="w-4 h-4 text-primary" />
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-none">
+                AI will dynamically weight distribution.
               </p>
             </div>
           </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Tax Year</label>
-            <select className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground text-sm border border-border/50">
-              {[2022, 2023, 2024, 2025].map(y => <option key={y}>{y}</option>)}
-            </select>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground p-2 rounded-lg bg-muted/20">
+          <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500 p-3 rounded-xl bg-[#0f172a] border border-white/5">
             <Lock className="w-4 h-4 text-primary" />
-            <span>PII Mode: <strong className="text-foreground">Anonymized</strong></span>
+            <span>PII Protocol: <strong className="text-success">VIRTUAL ANONYMIZATION</strong></span>
           </div>
-          <button onClick={handleGenerate} disabled={generating} className="w-full py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/80 disabled:opacity-50 transition-colors">
-            {generating ? "Generating..." : "Generate Dataset"}
+          <button
+            onClick={handleGenerate}
+            disabled={generating}
+            className="w-full h-14 rounded-2xl bg-primary text-white text-sm font-black uppercase tracking-widest hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+          >
+            {generating ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Synthesizing...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5" />
+                Generate Intelligence Dataset
+              </>
+            )}
           </button>
 
           {/* Live Synthesis Trace (Progress Log) */}
           {generating && (
-            <div className="mt-4 p-3 rounded-xl bg-black/90 border border-white/10 font-mono text-[9px] leading-tight text-success shadow-2xl animate-in slide-in-from-top-2 overflow-hidden">
-              <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-white/5 opacity-50">
-                <div className="flex items-center gap-1.5">
-                  <Terminal className="w-3 h-3" />
-                  <span className="tracking-widest uppercase font-bold text-[8px]">Live Synthesis Trace</span>
-                </div>
+            <div className="mt-5 p-4 rounded-xl bg-[#020617] border border-white/10 font-mono text-[10px] leading-relaxed text-success shadow-2xl animate-in fade-in duration-500">
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/5">
                 <div className="flex items-center gap-2">
-                  <span className="text-[7px] animate-pulse">REC</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" />
+                  <Terminal className="w-4 h-4" />
+                  <span className="tracking-[0.2em] uppercase font-black text-[9px]">Engine Trace</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[8px] animate-pulse font-black text-destructive">RECORDING</span>
+                  <div className="w-2 h-2 rounded-full bg-destructive animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
                 </div>
               </div>
-              <div className="space-y-1.5 max-h-32 overflow-y-auto scrollbar-none">
+              <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-none">
                 {synthesisLogs.map((log, i) => (
-                  <div key={i} className="flex gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
-                    <span className="opacity-30 whitespace-nowrap">[{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}]</span>
-                    <span className="text-success/90">{log}</span>
+                  <div key={i} className="flex gap-3 animate-in fade-in slide-in-from-left-2 duration-300">
+                    <span className="opacity-30 font-black">[{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}]</span>
+                    <span className="text-success/90 font-medium tracking-tight">{log}</span>
                   </div>
                 ))}
-                <div className="text-success animate-pulse inline-block">_</div>
+                <div className="text-success animate-pulse inline-block font-black">_</div>
               </div>
             </div>
           )}
         </div>
 
         {/* Preview Panel */}
-        <div className="lg:col-span-2 glass rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading font-semibold text-sm text-foreground">
-              {selectedDataset ? `Preview: ${selectedDataset.id}` : "Sample Record Preview"}
-            </h3>
-            {selectedDataset && (
-              <button
-                onClick={() => {
-                  setPreviewDataset(selectedDataset);
-                  setPreviewModalOpen(true);
-                }}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/20 text-primary text-xs font-bold border border-primary/30 hover:bg-primary/30 transition-all"
-              >
-                <Eye className="w-3.5 h-3.5" /> View Full Sample
-              </button>
-            )}
-          </div>
-          <pre className="text-[11px] font-mono text-muted-foreground bg-muted/20 rounded-lg p-4 overflow-auto max-h-80 scrollbar-thin">
-            {JSON.stringify(sampleTaxRecord, null, 2)}
-          </pre>
-          <div className="mt-4 space-y-3">
-            <div className="space-y-2">
-              <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">Compliance Standards</h4>
-              <ComplianceBadges />
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-[#1e293b] rounded-2xl p-6 border border-white/5 shadow-xl h-full flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                  <Eye className="w-5 h-5" />
+                </div>
+                <h3 className="font-heading font-black text-[13px] text-slate-100 uppercase tracking-widest">
+                  {selectedDataset ? `Dataset Payload: ${selectedDataset.id}` : "Global Seed Payload"}
+                </h3>
+              </div>
+              {selectedDataset && (
+                <button
+                  onClick={() => {
+                    setPreviewDataset(selectedDataset);
+                    setPreviewModalOpen(true);
+                  }}
+                  className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                >
+                  <Database className="w-4 h-4" /> Expand Structure
+                </button>
+              )}
+            </div>
+            <div className="flex-1 bg-[#0f172a] rounded-2xl border border-white/5 p-6 overflow-hidden relative group">
+              <div className="absolute top-0 right-0 p-4 opacity-30 group-hover:opacity-100 transition-opacity">
+                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">JSON Output</span>
+              </div>
+              <pre className="text-[12px] font-mono text-blue-300 leading-relaxed overflow-auto h-[400px] scrollbar-thin">
+                {JSON.stringify(sampleTaxRecord, null, 2)}
+              </pre>
+            </div>
+            <div className="mt-8 pt-8 border-t border-white/5">
+              <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Compliance Attestations</h4>
+              <div className="p-4 bg-[#0f172a] rounded-2xl border border-white/5">
+                <ComplianceBadges />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-
       {/* Filters */}
-      <div className="glass rounded-xl p-4 flex items-center gap-3">
-        <select value={formType} onChange={e => setFormType(e.target.value)} className="px-3 py-1.5 rounded-lg bg-muted/30 text-foreground text-xs border border-border/50 focus:outline-none focus:ring-1 focus:ring-primary">
+      <div className="bg-[#1e293b] rounded-xl p-4 flex items-center gap-3 border border-white/5 shadow-lg">
+        <select value={formType} onChange={e => setFormType(e.target.value)} className="px-4 py-2 rounded-lg bg-[#0f172a] text-slate-100 text-xs border border-white/10 focus:outline-none focus:ring-1 focus:ring-primary">
           <option value="All">All Form Types</option>
           {["W2", "1040", "1120S", "K-1", "Schedule C", "Schedule E"].map(f => <option key={f} value={f}>{f}</option>)}
         </select>
-        <span className="ml-auto text-xs text-muted-foreground">{filtered.length} datasets</span>
+        <div className="h-4 w-px bg-white/10 mx-2" />
+        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{filtered.length} active datasets available</span>
       </div>
 
-      <DataTable data={filtered} columns={columns} onRowClick={setSelectedDataset} />
+      <div className="bg-[#1e293b] rounded-2xl border border-white/5 overflow-hidden shadow-xl">
+        <DataTable data={filtered} columns={columns} onRowClick={setSelectedDataset} />
+      </div>
 
       {/* Data Preview Modal */}
       <Dialog open={previewModalOpen} onOpenChange={setPreviewModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-[#0f172a] border-white/10 text-slate-100">
           <DialogHeader>
-            <DialogTitle>Dataset Preview - {previewDataset?.id}</DialogTitle>
+            <DialogTitle className="text-xl font-black uppercase tracking-widest text-primary">Dataset Payload Preview: {previewDataset?.id}</DialogTitle>
           </DialogHeader>
+          <div className="h-px bg-white/10 my-4" />
           {previewDataset && (
             <div className="space-y-4">
-              <div className="grid grid-cols-4 gap-2 text-xs font-medium p-3 bg-muted/30 rounded-lg border border-border/50">
-                <div>ID</div>
-                <div>Name</div>
-                <div>Income</div>
-                <div>Form Type</div>
+              <div className="grid grid-cols-4 gap-4 text-[10px] font-black uppercase tracking-widest p-4 bg-[#1e293b] rounded-xl border border-white/5 text-slate-500">
+                <div>Entity ID</div>
+                <div>Legal Identity</div>
+                <div>Calculated Income</div>
+                <div>Form Structure</div>
               </div>
-              {Array.from({ length: 10 }).map((_, i) => {
-                const firstNames = ["Jordan", "Morgan", "Casey", "Riley", "Alex"];
-                const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones"];
-                const forms = ["W2", "1040", "K-1"];
-                return (
-                  <div key={i} className="grid grid-cols-4 gap-2 text-xs p-3 border-b border-border/30 hover:bg-muted/20 transition-colors">
-                    <div className="font-mono text-primary">SYN-{Math.random().toString(36).substring(2, 8).toUpperCase()}</div>
-                    <div>{firstNames[Math.floor(Math.random() * firstNames.length)]} {lastNames[Math.floor(Math.random() * lastNames.length)]}</div>
-                    <div>${(Math.random() * 150000 + 30000).toFixed(0)}</div>
-                    <div>{forms[Math.floor(Math.random() * forms.length)]}</div>
-                  </div>
-                );
-              })}
-              <p className="text-[11px] text-muted-foreground italic pt-4 border-t border-border/50">
-                Showing first 10 of {previewDataset?.count.toLocaleString()} total records
-              </p>
+              <div className="space-y-1">
+                {Array.from({ length: 15 }).map((_, i) => {
+                  const firstNames = ["Jordan", "Morgan", "Casey", "Riley", "Alex", "Quinn", "Skyler"];
+                  const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis"];
+                  const forms = ["W2", "1040", "K-1", "1120S"];
+                  return (
+                    <div key={i} className="grid grid-cols-4 gap-4 text-xs p-4 border-b border-white/5 hover:bg-white/5 transition-colors items-center">
+                      <div className="font-mono text-primary font-bold">SYN-{Math.random().toString(36).substring(2, 8).toUpperCase()}</div>
+                      <div className="font-medium text-slate-300">{firstNames[Math.floor(Math.random() * firstNames.length)]} {lastNames[Math.floor(Math.random() * lastNames.length)]}</div>
+                      <div className="font-mono text-success bg-success/10 px-2 py-1 rounded inline-block w-fit">${(Math.random() * 150000 + 30000).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                      <div className="text-[10px] font-black uppercase tracking-tighter bg-slate-800 px-2.5 py-1 rounded-full border border-white/10 text-slate-400 w-fit">{forms[Math.floor(Math.random() * forms.length)]}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="p-4 bg-primary/5 rounded-xl border border-primary/20 flex items-center justify-between">
+                <p className="text-[11px] text-slate-400 italic">
+                  Showing first 15 of {previewDataset?.count.toLocaleString()} synchronized entities in this synthetic shard.
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-success">Compliant Export</span>
+                </div>
+              </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }

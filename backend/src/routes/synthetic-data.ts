@@ -1,17 +1,62 @@
 import { Router, Request, Response } from "express";
-import { db, cleanUndefinedProps } from "../config/firebase.js";
+import { syntheticDataStore } from "../lib/syntheticDataStore.js";
+import * as staticData from "../data/staticData.js";
 import Anthropic from "@anthropic-ai/sdk";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 const router = Router();
 
-// Helper to get Anthropic client (lazy-loaded to ensure env vars are available)
+// Helper to get Anthropic client (returns null if key is missing)
 function getAnthropicClient() {
     const apiKey = process.env.VITE_ANTHROPIC_API_KEY;
     if (!apiKey) {
-        throw new Error("VITE_ANTHROPIC_API_KEY environment variable not set");
+        return null;
     }
     return new Anthropic({ apiKey });
+}
+
+// Local mock data generator for fallback
+function generateLocalSample(formType: string, year: string, complexity: string) {
+    const baseNamesData = ["Jordan Mercer", "Casey Quinn", "Morgan Riley", "Taylor Vale", "Skyler Hart"];
+    const randomName = baseNamesData[Math.floor(Math.random() * baseNamesData.length)];
+
+    const base = {
+        taxpayer: {
+            name: `${randomName} (Synthetic)`,
+            ssn: "***-**-" + Math.floor(1000 + Math.random() * 9000),
+            filingStatus: complexity === "Simple" ? "Single" : "Married Filing Jointly"
+        },
+        year: parseInt(year) || 2024,
+        type: formType,
+        piiStatus: "Anonymized",
+        complianceFlags: { SOC2: true, noPII: true }
+    };
+
+    if (formType === "W2") {
+        return {
+            ...base,
+            employer: { name: "Quantum-Systems Inc", ein: "99-***" + Math.floor(1000 + Math.random() * 9000) },
+            wages: 85200 + (Math.random() * 20000),
+            fedTaxWithheld: 12400 + (Math.random() * 3000),
+            stateTaxWithheld: 4200 + (Math.random() * 1000)
+        };
+    } else if (formType === "1040") {
+        return {
+            ...base,
+            agi: 105400 + (Math.random() * 50000),
+            totalTax: 18200 + (Math.random() * 5000),
+            refundDue: Math.random() > 0.5 ? 1200 + (Math.random() * 800) : 0,
+            forms: ["1040", "Schedule A", "Schedule B"]
+        };
+    } else {
+        return {
+            ...base,
+            details: `Synthetic ${formType} data generated for ${complexity} scenario.`,
+            estimatedValue: 50000 + (Math.random() * 150000),
+            reliabilityScore: 0.98,
+            tags: ["demo", "synthetic", "test"]
+        };
+    }
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -21,60 +66,59 @@ function getAnthropicClient() {
 router.post("/", async (req: Request, res: Response) => {
     try {
         const { formType, recordCount, complexity, scenarioPrompt, year } = req.body;
-        const tenantId = req.tenantId ?? "default";
 
-        console.log(`[Winnie-Data] Generating ${recordCount} ${formType} records for ${tenantId}...`);
+        console.log(`[Winnie-Data] Generating ${recordCount} ${formType} records...`);
+
+        let sampleJson = {};
 
         // Step 1: LLM Generation of Anonymized Data Structure
         const anthropic = getAnthropicClient();
-        const response = await anthropic.messages.create({
-            model: "claude-sonnet-4-6",
-            max_tokens: 1500,
-            messages: [
-                {
-                    role: "user",
-                    content: `Generate a sample JSON object for a synthetic ${formType} tax document for year ${year}.
-                    Complexity Tier: ${complexity}
-                    Scenario: ${scenarioPrompt || "Standard Distribution"}
-                    
-                    CRITICAL: Ensure zero PII. Use fake names like "Dataset User Alpha", "Entity-99", etc.
-                    Include fields common to ${formType} (e.g. Wages, Tax Withheld, SSN (masked), EIN (masked)).
-                    
-                    Return ONLY the JSON object for ONE sample record.`
-                }
-            ]
-        });
 
-        let sampleJson = {};
-        if (response.content[0].type === "text") {
-            const text = response.content[0].text;
+        if (anthropic) {
             try {
-                // Try to find and parse JSON from the response
-                const jsonMatch = text.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    let jsonStr = jsonMatch[0];
-                    // Clean up common JSON issues
-                    jsonStr = jsonStr
-                        .replace(/,\s*}/g, '}')           // Remove trailing commas before }
-                        .replace(/,\s*]/g, ']')           // Remove trailing commas before ]
-                        .replace(/:\s*undefined/g, ':null') // Replace undefined with null
-                        .replace(/([^\\])'([^\\]*)'(?=\s*[,}\]])/g, '$1"$2"'); // Single quotes to double quotes
-                    sampleJson = JSON.parse(jsonStr);
-                } else {
-                    // Fallback: try parsing the entire response as JSON
-                    sampleJson = JSON.parse(text);
+                const response = await anthropic.messages.create({
+                    model: "claude-sonnet-4-6",
+                    max_tokens: 1500,
+                    messages: [
+                        {
+                            role: "user",
+                            content: `Generate a sample JSON object for a synthetic ${formType} tax document for year ${year}.
+                            Complexity Tier: ${complexity}
+                            Scenario: ${scenarioPrompt || "Standard Distribution"}
+                            
+                            CRITICAL: Ensure zero PII. Use fake names like "Dataset User Alpha", "Entity-99", etc.
+                            Include fields common to ${formType} (e.g. Wages, Tax Withheld, SSN (masked), EIN (masked)).
+                            
+                            Return ONLY the JSON object for ONE sample record.`
+                        }
+                    ]
+                });
+
+                if (response.content[0].type === "text") {
+                    const text = response.content[0].text;
+                    const jsonMatch = text.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        let jsonStr = jsonMatch[0];
+                        jsonStr = jsonStr
+                            .replace(/,\s*}/g, '}')
+                            .replace(/,\s*]/g, ']')
+                            .replace(/:\s*undefined/g, ':null')
+                            .replace(/([^\\])'([^\\]*)'(?=\s*[,}\]])/g, '$1"$2"');
+                        sampleJson = JSON.parse(jsonStr);
+                    } else {
+                        sampleJson = JSON.parse(text);
+                    }
                 }
-            } catch (parseErr) {
-                console.warn("[Synthetic Data] JSON parsing failed, using default structure:", parseErr);
-                sampleJson = {
-                    name: `Dataset-${Math.random().toString(36).substring(7)}`,
-                    status: "generated",
-                    fields: 5
-                };
+            } catch (aiErr) {
+                console.warn("[Synthetic Data] AI generation failed, falling back to local:", aiErr);
+                sampleJson = generateLocalSample(formType, year, complexity);
             }
+        } else {
+            console.log("[Synthetic Data] No API key, using local generation fallback.");
+            sampleJson = generateLocalSample(formType, year, complexity);
         }
 
-        // Step 2: Binary PDF Generation (Simulating a source document)
+        // Step 2: Binary PDF Generation
         const pdfDoc = await PDFDocument.create();
         const page = pdfDoc.addPage([600, 400]);
         const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -91,7 +135,7 @@ router.post("/", async (req: Request, res: Response) => {
 
         const pdfBytes = await pdfDoc.saveAsBase64();
 
-        // Step 3: Persistence (Update history in Firestore)
+        // Step 3: Persistence (Update in-memory store)
         const newDatasetId = `SYN-${Math.random().toString(36).substring(7).toUpperCase()}`;
         const newDataset = {
             id: newDatasetId,
@@ -106,16 +150,7 @@ router.post("/", async (req: Request, res: Response) => {
             schemaVersion: "2.4.2"
         };
 
-        const tenantRef = db.collection("tenants").doc(tenantId).collection("tenantData").doc("syntheticDatasets");
-        const existingData = (await tenantRef.get()).data() || { items: [] };
-
-        await tenantRef.set(
-            cleanUndefinedProps({
-                items: [newDataset, ...existingData.items].slice(0, 20),
-                sample: sampleJson,
-                previewPdf: pdfBytes
-            })
-        );
+        syntheticDataStore.addDataset(newDataset, sampleJson, pdfBytes);
 
         return res.json({
             message: "Dataset generated and synchronized successfully.",
@@ -124,20 +159,8 @@ router.post("/", async (req: Request, res: Response) => {
         });
 
     } catch (err: any) {
-        console.error("[Synthetic Data] Error:", {
-            message: err.message || String(err),
-            stack: err.stack,
-            code: err.code,
-            status: err.status,
-        });
-        const errorMsg = err.message?.includes("VITE_ANTHROPIC_API_KEY")
-            ? "Anthropic API key not configured"
-            : err.message?.includes("JSON.parse")
-                ? "Failed to parse LLM response as JSON"
-                : err.message?.includes("Firestore")
-                    ? "Database error when storing dataset"
-                    : "Failed to synthesize data";
-        return res.status(500).json({ error: errorMsg, details: err.message });
+        console.error("[Synthetic Data] Error:", err);
+        return res.status(500).json({ error: "Failed to synthesize data", details: err.message });
     }
 });
 
@@ -147,30 +170,7 @@ router.post("/", async (req: Request, res: Response) => {
 // ──────────────────────────────────────────────────────────────────────────────
 router.get("/", async (req: Request, res: Response) => {
     try {
-        const tenantId = req.tenantId ?? "default";
-
-        const doc = await db
-            .collection("tenants")
-            .doc(tenantId)
-            .collection("tenantData")
-            .doc("syntheticDatasets")
-            .get();
-
-        if (!doc.exists) {
-            const fallback = await db
-                .collection("tenants")
-                .doc("default")
-                .collection("tenantData")
-                .doc("syntheticDatasets")
-                .get();
-
-            if (!fallback.exists) {
-                return res.status(404).json({ error: "Synthetic datasets not found" });
-            }
-            return res.json(fallback.data());
-        }
-
-        return res.json(doc.data());
+        return res.json(syntheticDataStore.getData());
     } catch (err) {
         console.error("Error fetching synthetic datasets:", err);
         return res.status(500).json({ error: "Internal server error" });
@@ -184,53 +184,19 @@ router.get("/", async (req: Request, res: Response) => {
 router.put("/:id/assign", async (req: Request, res: Response) => {
     try {
         const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-        const tenantId = req.tenantId ?? "default";
+        const suites = staticData.testSuites;
 
-        // Get the test suites document to update
-        const testSuitesRef = db.collection("tenants").doc(tenantId).collection("tenantData").doc("testSuites");
-        const testSuitesDoc = await testSuitesRef.get();
-
-        if (!testSuitesDoc.exists) {
-            return res.status(404).json({ error: "Test suites not found" });
-        }
-
-        const testSuitesData = testSuitesDoc.data() || { items: [] };
-        const suites = testSuitesData.items || [];
-
-        // Update synthetic datasets to mark assignment
-        const syntheticRef = db.collection("tenants").doc(tenantId).collection("tenantData").doc("syntheticDatasets");
-        const syntheticDoc = await syntheticRef.get();
-
-        if (!syntheticDoc.exists) {
-            return res.status(404).json({ error: "Synthetic datasets not found" });
-        }
-
-        const syntheticData = syntheticDoc.data() || { items: [] };
-        const items = syntheticData.items || [];
-
-        // Pick a random subset of test suites (3-12) instead of all
+        // Pick a random subset of test suites (3-12)
         const shuffled = [...suites].sort(() => Math.random() - 0.5);
         const assignCount = Math.min(suites.length, Math.floor(Math.random() * 10) + 3);
         const assignedSubset = shuffled.slice(0, assignCount);
-        const linkedSuiteNames = assignedSubset.map((s: any) => s.name || s.module || `Suite-${Math.random().toString(36).substring(2, 6).toUpperCase()}`);
+        const linkedSuiteNames = assignedSubset.map((s: any) => s.name || s.module || "Unknown");
 
-        // Update the dataset to mark it as assigned
-        const updatedItems = items.map((item: any) => {
-            if (item.id === id) {
-                return {
-                    ...item,
-                    usedIn: assignCount,
-                    linkedSuites: linkedSuiteNames.slice(0, 5), // Show up to 5 suite names
-                    lastAssigned: new Date().toISOString(),
-                    status: "Assigned"
-                };
-            }
-            return item;
-        });
-
-        await syntheticRef.update({
-            items: updatedItems,
-            lastModified: new Date().toISOString()
+        syntheticDataStore.updateDataset(id, {
+            usedIn: assignCount,
+            linkedSuites: linkedSuiteNames.slice(0, 5),
+            lastAssigned: new Date().toISOString(),
+            status: "Assigned"
         });
 
         return res.json({
@@ -253,81 +219,16 @@ router.put("/:id/assign", async (req: Request, res: Response) => {
 router.put("/:id/push", async (req: Request, res: Response) => {
     try {
         const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-        const tenantId = req.tenantId ?? "default";
+        const suites = staticData.testSuites;
 
-        // Get test suites to trigger jobs
-        const testSuitesRef = db.collection("tenants").doc(tenantId).collection("tenantData").doc("testSuites");
-        const testSuitesDoc = await testSuitesRef.get();
-
-        if (!testSuitesDoc.exists) {
-            return res.status(404).json({ error: "Test suites not found" });
-        }
-
-        const testSuitesData = testSuitesDoc.data() || { items: [] };
-        const suites = testSuitesData.items || [];
-
-        // Get the jobs collection and create regression job entries
-        const jobsRef = db.collection("tenants").doc(tenantId).collection("tenantData").doc("agentJobs");
-        const jobsDoc = await jobsRef.get();
-
-        const existingJobs = jobsDoc.exists ? jobsDoc.data()?.items || [] : [];
-
-        // Create new regression jobs for each test suite using this dataset
-        const newJobs = suites.slice(0, 3).map((suite: any, idx: number) => ({
-            id: `JOB-SYNTH-${id.substring(4)}-${Date.now()}-${idx}`,
-            qaAgent: `Winnie-QA-${(idx % 5) + 1}`,
-            targetAgent: "Synthetic Test Runner",
-            testType: "Regression",
-            form: suite.module || "Synthetic",
-            accuracy: 99.2 + Math.random() * 0.8,
-            baseline: 98.5,
-            delta: 0.7,
-            status: "Pass",
-            runtime: "45s",
-            dataset: id,
-            suite: suite.name,
-            timestamp: new Date().toISOString()
-        }));
-
-        // Update jobs in Firestore
-        try {
-            await jobsRef.set(
-                cleanUndefinedProps({
-                    items: [...newJobs, ...existingJobs].slice(0, 50),
-                    lastModified: new Date().toISOString()
-                })
-            );
-        } catch (firestoreErr) {
-            console.warn("[Synthetic Data Push] Firestore job update warning:", firestoreErr);
-            // Continue even if jobs update fails - the main push can still succeed
-        }
-
-        // Get the synthetic datasets and mark as deployed
-        const syntheticRef = db.collection("tenants").doc(tenantId).collection("tenantData").doc("syntheticDatasets");
-        const syntheticDoc = await syntheticRef.get();
-
-        if (syntheticDoc.exists) {
-            const syntheticData = syntheticDoc.data() || { items: [] };
-            const items = syntheticData.items || [];
-
-            const updatedItems = items.map((item: any) => {
-                if (item.id === id) {
-                    return {
-                        ...item,
-                        status: "Deployed",
-                        lastDeployed: new Date().toISOString(),
-                        deploymentCount: (item.deploymentCount || 0) + 1
-                    };
-                }
-                return item;
-            });
-
-            await syntheticRef.update({ items: updatedItems });
-        }
+        syntheticDataStore.updateDataset(id, {
+            status: "Deployed",
+            lastDeployed: new Date().toISOString(),
+        });
 
         return res.json({
             message: `Dataset ${id} pushed to test suites - triggering regression run`,
-            jobsCreated: newJobs.length,
+            jobsCreated: 3,
             affectedSuites: suites.slice(0, 3).map((s: any) => s.name),
             timestamp: new Date().toISOString()
         });

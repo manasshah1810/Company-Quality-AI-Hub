@@ -70,11 +70,13 @@ export function SLABreachDetail({ tileName, onClose, stressLevel = "Peak Season"
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "rgba(0,0,0,0.9)",
-                      border: "1px solid rgba(255,255,255,0.1)",
+                      border: "1px solid rgba(255,255,255,0.2)",
                       borderRadius: "6px",
-                      padding: "6px"
+                      padding: "6px",
+                      color: "#fff"
                     }}
-                    labelStyle={{ color: "rgb(200, 200, 200)", fontSize: "9px" }}
+                    itemStyle={{ color: "#fff" }}
+                    labelStyle={{ color: "#fff", fontSize: "10px", fontWeight: "bold" }}
                     formatter={(value: any) => [`${value}ms`, "Latency"]}
                   />
                   <Line
